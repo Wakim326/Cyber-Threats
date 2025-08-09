@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Don't Click Dangerous Links — (Prank)</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#ff4d4d;--muted:#9aa4b2}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;background:linear-gradient(180deg,#071021 0%, #07142a 100%);color:#e6eef8;display:flex;align-items:center;justify-content:center;height:100vh}
+    .card{width:92vw;max-width:760px;padding:32px;border-radius:16px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 10px 30px rgba(2,6,23,0.6);text-align:center}
+    h1{margin:0 0 8px;font-size:clamp(20px,3vw,34px)}
+    p.lead{color:var(--muted);margin:0 0 22px}
+    .fake-link{display:inline-block;padding:18px 26px;border-radius:12px;background:linear-gradient(90deg,#0b1220, #091223);border:1px solid rgba(255,255,255,0.02);cursor:pointer;user-select:none;transition:transform .12s ease, box-shadow .12s ease}
+    .fake-link:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(3,6,22,0.6)}
+    .danger{color:var(--accent);font-weight:700}
+    .note{margin-top:18px;color:var(--muted);font-size:13px}
+    /* modal */
+    .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(2,6,23,0.6), rgba(2,6,23,0.8));backdrop-filter:blur(3px);z-index:40}
+    .modal{background:linear-gradient(180deg,#071826,#02121a);padding:26px;border-radius:12px;width:90%;max-width:520px;color:#eaf6ff;box-shadow:0 20px 60px rgba(0,0,0,0.6);text-align:left}
+    .modal h2{margin:0 0 8px}
+    .modal p{margin:0 0 18px;color:var(--muted)}
+    .btn-row{display:flex;gap:12px;justify-content:flex-end}
+    .btn{padding:10px 14px;border-radius:10px;border:0;cursor:pointer}
+    .btn.ack{background:#1f6feb;color:white}
+    .btn.cancel{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+    /* silly confetti */
+    .confetti{position:fixed;pointer-events:none;inset:0;z-index:50}
+    .confetti i{position:absolute;width:10px;height:14px;opacity:0;transform:translateY(-20vh) rotate(0);animation:fall 1200ms linear forwards}
+    @keyframes fall{to{transform:translateY(110vh) rotate(540deg);opacity:1}}
+    footer{margin-top:20px;color:var(--muted);font-size:13px}
+    .small{font-size:12px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="card" role="main">
+    <h1>🚫 Dangerous Link</h1>
+    <p class="lead">A link was detected on this page that looks suspicious. <span class="danger">Do not click it.</span></p>
+
+    <div class="fake-link" id="fakeLink" role="button" tabindex="0" aria-pressed="false">DO NOT CLICK THIS LINK</div>
+
+    <p class="note">(This is a friendly prank to remind people about safety online.)</p>
+    <footer class="small">Tip: real dangerous links often ask for passwords, payment, or say you "won" something. Stay safe.</footer>
+  </div>
+
+  <!-- modal -->
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-labelledby="modalTitle">
+      <h2 id="modalTitle">Whoa — Wait!</h2>
+      <p>Just kidding. This was a prank to remind you: <strong>Don't click dangerous links.</strong> They can steal passwords or install malware.</p>
+      <div class="btn-row">
+        <button class="btn cancel" id="closeNo">Close</button>
+        <button class="btn ack" id="closeYes">I get it</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="confetti" id="confetti"></div>
+
+  <script>
+    const fake = document.getElementById('fakeLink');
+    const overlay = document.getElementById('overlay');
+    const confettiWrap = document.getElementById('confetti');
+    const closeNo = document.getElementById('closeNo');
+    const closeYes = document.getElementById('closeYes');
+
+    function openModal(){
+      overlay.style.display = 'flex';
+      overlay.setAttribute('aria-hidden','false');
+      spawnConfetti(24);
+    }
+    function closeModal(){
+      overlay.style.display = 'none';
+      overlay.setAttribute('aria-hidden','true');
+      confettiWrap.innerHTML = '';
+    }
+
+    fake.addEventListener('click', openModal);
+    fake.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' ') openModal(); });
+    closeNo.addEventListener('click', closeModal);
+    closeYes.addEventListener('click', closeModal);
+
+    function rand(min,max){return Math.random()*(max-min)+min}
+    function spawnConfetti(n){
+      confettiWrap.innerHTML='';
+      for(let i=0;i<n;i++){
+        const el = document.createElement('i');
+        const left = rand(5,95);
+        el.style.left = left+'%';
+        el.style.top = rand(-20,0)+'vh';
+        el.style.background = `hsl(${Math.floor(rand(0,360))} ${Math.floor(rand(60,90))}% ${Math.floor(rand(45,65))}%)`;
+        el.style.width = Math.floor(rand(6,12))+'px';
+        el.style.height = Math.floor(rand(8,16))+'px';
+        el.style.borderRadius = '2px';
+        el.style.animationDuration = Math.floor(rand(900,1600))+'ms';
+        confettiWrap.appendChild(el);
+      }
+    }
+
+    // Safety note: this page is intentionally static and contains NO tracking, no external scripts, and no links that collect data.
+  </script>
+</body>
+</html>
